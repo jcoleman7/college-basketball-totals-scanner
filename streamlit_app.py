@@ -1,5 +1,15 @@
+import os
 import streamlit as st
 from datetime import date, timedelta
+
+try:
+    api_key = st.secrets.get("THERUNDOWN_API_KEY")
+except Exception:
+    api_key = None
+
+if api_key:
+    os.environ["THERUNDOWN_API_KEY"] = str(api_key)
+
 from scanner.compare import compare_games
 
 st.set_page_config(
