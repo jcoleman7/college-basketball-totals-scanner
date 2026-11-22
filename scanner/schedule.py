@@ -1,4 +1,3 @@
-
 import re
 import requests
 from datetime import datetime
@@ -16,6 +15,17 @@ LEAGUES = {
 SEASON = 2027
 
 _D1_TEAM_CACHE = {}
+
+# Identify the request as a normal browser-style request.
+ESPN_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/131.0.0.0 Safari/537.36"
+    ),
+    "Accept": "application/json, text/plain, */*",
+    "Referer": "https://www.espn.com/",
+}
 
 
 def fetch_d1_team_ids(gender):
@@ -35,6 +45,7 @@ def fetch_d1_team_ids(gender):
     response = requests.get(
         root + "50/children",
         params={"limit": 1000},
+        headers=ESPN_HEADERS,
         timeout=20,
     )
     response.raise_for_status()
@@ -52,6 +63,7 @@ def fetch_d1_team_ids(gender):
         response = requests.get(
             root + group_id + "/teams",
             params={"limit": 1000},
+            headers=ESPN_HEADERS,
             timeout=20,
         )
         response.raise_for_status()
@@ -84,6 +96,7 @@ def fetch_schedule(gender, game_date=None):
             "groups": 50,
             "limit": 500,
         },
+        headers=ESPN_HEADERS,
         timeout=20,
     )
     response.raise_for_status()
@@ -97,7 +110,6 @@ def fetch_schedule(gender, game_date=None):
             continue
 
         competitors = competitions[0].get("competitors", [])
-
         if len(competitors) != 2:
             continue
 
